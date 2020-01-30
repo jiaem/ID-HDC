@@ -1,0 +1,68 @@
+//For calculation of difference between dates see https://math.stackexchange.com/questions/683312/formula-to-calculate-difference-between-two-dates
+
+let totalRequired = 4 //per year
+let freqRequired = 14 //days
+let samples = Samples.Raw(Form.[SWATER-M3-Lowes Pit North Downstream lab results].[Lab number], report.starts, report.ends)
+let freqHeader = "14 Days+ ?"
+
+Table.RowHeaders("Date")
+Table.Headers("Form Submitted", "Days Between Sampling", freqHeader )
+init i = 1
+
+Sampler.Reset(samples)
+loop while Sampler.Next(samples)
+
+	let d = Time.Day(Time.UtcToTimezone(Sampler.Stamp(samples),This.Timezone))
+	let m = Time.Month(Time.UtcToTimezone(Sampler.Stamp(samples),This.Timezone))
+	let y = Time.Year(Time.UtcToTimezone(Sampler.Stamp(samples),This.Timezone))
+
+	//Date
+	Table.Row(i, d + "-" + m  + "-" + y)
+
+	//Form Submitted
+	Table.Cell(i,1,1)
+	
+	//Days Between Sampling
+	//Converts the date to be able to calculate the difference in days between sampling.
+	if m = 1 or m = 2 then 
+		let m = m + 12
+		let y = y - 1
+	endif
+ 	let date = (365 * y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) + d + Math.floor((153*m+8)/5))
+	if i != 1 then 
+		let dd = date - prevdate
+		else
+		let dd = "-"
+	endif
+	Table.Cell(i,2,dd)
+	
+	//Frequency passed?
+	if i = 1 then 
+		Table.Cell(i,3,"-")
+		let prevdate = date
+		else
+		if dd >= freqRequired then
+			Table.Cell(i,3,"Yes")
+			let prevdate = date 
+		else 
+			Table.Cell(i,3, "No")
+			Table.CellFails(i,2,dd < freqRequired)
+			Table.CellFails(i,3,dd < freqRequired)
+		endif
+	endif
+	
+	let i = i+1
+
+endloop
+
+	let s = (i - 1)
+	//Total
+	Table.Row(i,"Total")
+	//Sum
+	Table.Cell(i,1,s + "/" + totalRequired)
+	Table.CellFails(i,1,s < totalRequired )
+	//Pass fail frequency?
+	Table.Cell(i,2,"-")
+	Table.CellFails(i,2,s < totalRequired )
+	Table.Cell(i,3,"-")
+	Table.CellFails(i,3,s < totalRequired )
