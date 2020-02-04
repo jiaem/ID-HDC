@@ -1,2 +1,2 @@
-# ID-for-HDC
-Probably code for table generators
+# ID-HDC
+Place to store 'code' that is used on ID e.g. Report Tables, Table Generators etc.
