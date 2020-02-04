@@ -31,23 +31,18 @@ loop while Sampler.Next(samples)
  	let date = (365 * y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) + d + Math.floor((153*m+8)/5))
 	if i != 1 then 
 		let dd = date - prevdate
-		else
-		let dd = "-"
+		Table.Cell(i,2,dd)
 	endif
-	Table.Cell(i,2,dd)
 	
+	let prevdate = date
+
 	//Frequency passed?
-	if i = 1 then 
-		Table.Cell(i,3,"-")
-		let prevdate = date
-		else
-		if dd >= freqRequired then
-			Table.Cell(i,3,"Yes")
-			let prevdate = date 
-		else 
+	if i != 1 then 
+		if dd < freqRequired then 
 			Table.Cell(i,3, "No")
 			Table.CellFails(i,2,dd < freqRequired)
 			Table.CellFails(i,3,dd < freqRequired)
+			else Table.Cell(i,3,"Yes")
 		endif
 	endif
 	
@@ -62,7 +57,5 @@ endloop
 	Table.Cell(i,1,s + "/" + totalRequired)
 	Table.CellFails(i,1,s < totalRequired )
 	//Pass fail frequency?
-	Table.Cell(i,2,"-")
 	Table.CellFails(i,2,s < totalRequired )
-	Table.Cell(i,3,"-")
 	Table.CellFails(i,3,s < totalRequired )
