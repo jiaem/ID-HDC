@@ -33,7 +33,7 @@ loop while Sampler.Next(samples) or Sampler.Next(sampleDate) or Sampler.Next(Sam
 				let val = 0
 			endif
 
-		Table.Cell(i,3,Sampler.Value(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends)))
+			Table.Cell(i,3,Sampler.Value(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends)))
 
 		let i = i+1
 		endif
