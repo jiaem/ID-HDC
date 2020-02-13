@@ -42,24 +42,35 @@ if (list.get(samples,0) != null) then
 				Table.CellFails(i,3,Sampler.Value(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends)) = "No")
 				Table.CellFails(i,5,Sampler.Value(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends)) = "No")
 
-			let i = i+1
-			endif
+				let i = i+1
+			else
+				init k = 1
+				loop while k <= 5
+					if (k = 4) then Table.Cell(1,k,"No Reports Submitted")
+					else Table.Cell(1,k, "N/A")
+					endif
+					Table.CellFails(1,k,TRUE)
+					let k = k+1 
+				endloop
+				Table.RowFails(1,TRUE)
+				Table.Fails(TRUE)
+				endif
+
 		endif
 	endloop
 
 else
 
-	Table.Row(1,"N/A")
-	Table.Cell(1,1,"N/A")
-	Table.Cell(1,2,"N/A")
-	Table.Cell(1,3,"N/A")
-	Table.Cell(1,4,"No Reports submitted")
-	Table.Cell(1,5,"N/A")
-	Table.CellFails(1,1,TRUE)
-	Table.CellFails(1,2,TRUE)
-	Table.CellFails(1,3,TRUE)
-	Table.CellFails(1,4,TRUE)
-	Table.CellFails(1,5,TRUE)
+	init k = 1
+	loop while k <= 5
+		if (k = 4) then Table.Cell(1,k,"No Reports Submitted")
+		else Table.Cell(1,k, "N/A")
+		endif
+		Table.CellFails(1,k,TRUE)
+		let k = k+1 
+	endloop
 	Table.RowFails(1,TRUE)
 	Table.Fails(TRUE)
+
 endif
+
