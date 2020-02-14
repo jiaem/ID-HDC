@@ -8,11 +8,17 @@ Table.RowHeaders("Date")
 Table.Headers("Sample Date", "Date of results received", "Date of results sent to HBRC", "Submitted", "Submitted within 7 days?")
 init i = 1
 
-if (list.get(samples,0) != null) then
 
+let samplesfalsecheck = list.create()
+loop while Sampler.Next(samples)
+     push samplesfalsecheck = Sampler.Value(samples)
+endloop
+Sampler.Reset(samples)
+
+if (list.get(samples,0) != null and not list.none(samplesfalsecheck, true)) then
 	//Sampler.Reset(samples)
 	loop while Sampler.Next(samples) or Sampler.Next(sampleDate) or Sampler.Next(receivedDate) or Sampler.Next(sentDate) or Sampler.Next(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends))
-		if (list.get(samples,0) != null) then
+			if (list.get(samples,sampler.index(samples)) != null) then
 			if (Sampler.Value(samples) = True) then
 				let d = Time.Day(Time.UtcToTimezone(Sampler.Stamp(samples),This.Timezone))
 				let m = Time.Month(Time.UtcToTimezone(Sampler.Stamp(samples),This.Timezone))
@@ -43,24 +49,12 @@ if (list.get(samples,0) != null) then
 				Table.CellFails(i,5,Sampler.Value(Samples.Raw(Form.[SWATER-LOWES-M3-Reporting of Results Lowes Pit].[Has HBRC been notified of results within 7 days?], report.starts, report.ends)) = "No")
 
 				let i = i+1
-			else
-				init k = 1
-				loop while k <= 5
-					if (k = 4) then Table.Cell(1,k,"No Reports Submitted")
-					else Table.Cell(1,k, "N/A")
-					endif
-					Table.CellFails(1,k,TRUE)
-					let k = k+1 
-				endloop
-				Table.RowFails(1,TRUE)
-				Table.Fails(TRUE)
-				endif
-
+			endif
 		endif
 	endloop
 
 else
-
+	Table.Row(1, "N/A")
 	init k = 1
 	loop while k <= 5
 		if (k = 4) then Table.Cell(1,k,"No Reports Submitted")
